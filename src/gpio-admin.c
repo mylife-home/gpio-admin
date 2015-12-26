@@ -46,6 +46,10 @@ static void allow_access_by_user(unsigned int pin, const char *filename) {
   if(stat_data.st_mode & S_IWUSR) {
     mode |= (S_IWUSR | S_IWGRP | S_IWOTH);
   }
+
+  if (chmod(path, mode) != 0) {
+    error(6, errno, "failed to set permissions of %s", path);
+  }
 }
 
 static unsigned int parse_gpio_pin(const char *pin_str) {
