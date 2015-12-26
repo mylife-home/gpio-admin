@@ -3,6 +3,7 @@ CC=gcc
 CFLAGS=-Wall -O2
 
 SRCDIR=src
+OUTDIR=out
 
 SRC=$(wildcard $(SRCDIR)/*.c)
 OBJS=$(SRC:$(SRCDIR)/%.c=$(OUTDIR)/%.o)
@@ -11,16 +12,16 @@ ifndef DESTDIR
 DESTDIR=/usr/local
 endif
 
-all: out/gpio-admin
+all: $(OUTDIR)/gpio-admin
 .PHONY: all
 
-out/gpio-admin: $(OBJS)
+$(OUTDIR)/gpio-admin: $(OBJS)
 
-out/%.o: $(SRCDIR)/%.c
+$(OUTDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< -c -o $@
 
-install: out/gpio-admin
+install: $(OUTDIR)/gpio-admin
 	mkdir -p $(DESTDIR)/bin/
 	install $(OUTDIR)/gpio-admin $(DESTDIR)/bin/
 	chown root:root $(DESTDIR)/bin/gpio-admin
@@ -32,7 +33,7 @@ uninstall:
 .PHONY: uninstall
 
 clean :
-	rm -rf out
+	rm -rf $(OUTDIR)
 .PHONY: clean
 
 again: clean all
