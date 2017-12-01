@@ -5,12 +5,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <error.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdint.h>
@@ -23,6 +23,23 @@
 static void usage_error(char **argv) {
   fprintf(stderr, "usage: %s {export|unexport} <gpio-pin> [pullup|pulldown]\n", argv[0]);
   exit(1);
+}
+
+static void error(int status, int errnum, const char *format, ...) {
+  fflush(stdout);
+
+  va_list argp;
+  va_start(argp, format);
+  vfprintf(stderr, format, argp);
+  va_end(argp);
+
+  if(errnum) {
+    fprintf(stderr, " : %s", strerror(errnum));
+  }
+  fprintf(stderr, "\n");
+  if(status) {
+    exit(status);
+  }
 }
 
 static void allow_access_by_user(unsigned int pin, const char *filename) {
